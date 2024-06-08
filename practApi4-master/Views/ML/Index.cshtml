@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "ANALISIS DE RECOMENDACION";
+    var ratings = ViewData["ratings"] as List<(int productoId, float normalizedScore)>;
+    var trendingProductos = ViewData["trendingproductos"] as List<practApi4.Models.Producto>;
+}
+
+<h1 class="text-center mt-4">@ViewData["Title"]</h1>
+
+
+                <form asp-controller="ML" asp-action="Predict" method="post" class="mt-3">
+                    <div class="form-group">
+                        <label for="id"> INSERTAR ID USUARIO</label>
+                       <input type="text" class="form-control" id="id" name="id" />
+                    </div>
+                    <button type="submit" style="background-color: #06404b;border-color: #06404b" class="btn btn-primary w-100 mt-2" >Enviar</button>
+                </form>
+
+                @if (ratings != null && ratings.Count > 0)
+                {
+                    <h2 class="text-center mt-4">RECOMENDACION DE PRODUCTOS EN STOCK</h2>
+              
+                    <table class="table table-striped mt-3" >
+                        <thead>
+                            <tr>
+                                <th scope="col">PRODUCTO ID</th>
+                                <th scope="col">NOMBRE DEL PRODUCTO</th>
+                                <th scope="col">SCORE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                               @foreach (var rating in ratings)
+                            {
+                                var producto = trendingProductos.FirstOrDefault(p => p.ProductoId == rating.productoId);
+                <tr>
+                    <td>@rating.productoId</td>
+                    <td>@producto?.ProductoNombre</td>
+                    <td>@rating.normalizedScore</td>
+                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-center mt-4">NO HAY RECOMENDACIONES.</p>
+                }
+
+                <h2 class="text-center mt-4">PRODUCTOS EN TENDENCIA</h2>
+                @if (trendingProductos!= null && trendingProductos.Count > 0)
+                {
+                   <ul class="list-group mt-3" style="display:flex; justify-content:center; align-items:center; "> 
+                        @foreach (var producto in trendingProductos)
+                        {
+                            <li class="list-group-item">@producto.ProductoNombre</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-center mt-4"> NO EXISTE PRODUCTOS EN TENDENCIA.</p>
+                }
